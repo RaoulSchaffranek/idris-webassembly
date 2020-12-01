@@ -1,0 +1,30 @@
+package WebAssembly
+
+modules = WebAssembly
+        , WebAssembly.Structure
+        , WebAssembly.Structure.Values
+        , WebAssembly.Structure.Values.Bytes
+        , WebAssembly.Structure.Values.Integers
+        , WebAssembly.Structure.Values.FloatingPoint
+        , WebAssembly.Structure.Values.Names
+        , WebAssembly.Structure.Types
+        , WebAssembly.Structure.Types.ValueTypes
+        , WebAssembly.Structure.Types.ResultTypes
+        , WebAssembly.Structure.Types.FunctionTypes
+        , WebAssembly.Structure.Types.Limits
+        , WebAssembly.Structure.Types.MemoryTypes
+        , WebAssembly.Structure.Types.TableTypes
+        , WebAssembly.Structure.Instructions
+        , WebAssembly.Structure.Instructions.Control
+        , WebAssembly.Structure.Instructions.Memory
+        , WebAssembly.Structure.Modules
+        , WebAssembly.Structure.Modules.Indices
+        , WebAssembly.Structure.Modules.Functions
+        , WebAssembly.Structure.Modules.Tables
+        , WebAssembly.Structure.Modules.Memories
+        , WebAssembly.Structure.Modules.Globals
+        , WebAssembly.Structure.Modules.ElementSegments
+        , WebAssembly.Structure.Modules.DataSegments
+        , WebAssembly.Structure.Modules.StartFunction
+        , WebAssembly.Structure.Modules.Exports
+        , WebAssembly.Structure.Modules.Imports
