@@ -21,66 +21,82 @@ data ExternType : Type where
 
 -- Equality
 
+total
 public export
 lemma_externtype__func_injective : ((x = y) -> Void) -> (Func x = Func y) -> Void
 lemma_externtype__func_injective func_types_neq Refl = func_types_neq Refl
 
+total
 public export
 lemma_externtype__table_injective : ((x = y) -> Void) -> (Table x = Table y) -> Void
 lemma_externtype__table_injective table_tables_neq Refl = table_tables_neq Refl
 
+total
 public export
 lemma_externtype__mem_injective : ((x = y) -> Void) -> (Mem x = Mem y) -> Void
 lemma_externtype__mem_injective mem_types_neq Refl = mem_types_neq Refl
 
+total
 public export
 lemma_externtype__global_injective : ((x = y) -> Void) -> (Global x = Global y) -> Void
 lemma_externtype__global_injective global_types_neq Refl = global_types_neq Refl
 
+total
 public export
 lemma_func_not_table : (Func x = Table y) -> Void
 lemma_func_not_table Refl impossible
 
+total
 public export
 lemma_func_not_mem : (Func x = Mem y) -> Void
 lemma_func_not_mem Refl impossible
 
+total
 public export
 lemma_func_not_global : (Func x = Global y) -> Void
 lemma_func_not_global Refl impossible
 
+total
 public export
 lemma_table_not_func : (Table x = Func y) -> Void
 lemma_table_not_func Refl impossible
 
+total
 public export
 lemma_table_not_mem : (Table x = Mem y) -> Void
 lemma_table_not_mem Refl impossible
 
+total
 public export
 lemma_table_not_global : (Table x = Global y) -> Void
 lemma_table_not_global Refl impossible
 
+total
 public export
 lemma_mem_not_func : (Mem x = Func y) -> Void
 lemma_mem_not_func Refl impossible
 
+total
 public export
 lemma_mem_not_table : (Mem x = Table y) -> Void
 lemma_mem_not_table Refl impossible
 
+total
 public export
 lemma_mem_not_global : (Mem x = Global y) -> Void
 lemma_mem_not_global Refl impossible
 
+total
 public export
 lemma_global_not_func : (Global x = Func y) -> Void
 lemma_global_not_func Refl impossible
 
+total
 public export
 lemma_global_not_table : (Global x = Table y) -> Void
 lemma_global_not_table Refl impossible
 
+total
 public export
 lemma_global_not_mem : (Global x = Mem y) -> Void
 lemma_global_not_mem Refl impossible

@@ -16,9 +16,13 @@ record MemArg where
 
 -- Equality
 
+total
+public export
 lemma_memarg__offset_injective: ((o1 = o2) -> Void) -> (MkMemArg o1 a1 = MkMemArg o2 a2) -> Void
 lemma_memarg__offset_injective o1_not_o2 Refl = o1_not_o2 Refl
 
+total
+public export
 lemma_memarg__align_injective: ((a1 = a2) -> Void) -> (MkMemArg o1 a1 = MkMemArg o2 a2) -> Void
 lemma_memarg__align_injective a1_not_a2 Refl = a1_not_a2 Refl
 

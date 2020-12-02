@@ -18,14 +18,17 @@ record Data where
 
 -- Equality
 
+total
 public export
 lemma_data__data_injective : ((d1 = d2) -> Void) -> (MkData d1 o1 i1 = MkData d2 o2 i2) -> Void
 lemma_data__data_injective d1_not_d2 Refl = d1_not_d2 Refl
 
+total
 public export
 lemma_data__offset_injective : ((o1 = o2) -> Void) -> (MkData d1 o1 i1 = MkData d2 o2 i2) -> Void
 lemma_data__offset_injective o1_not_o2 Refl = o1_not_o2 Refl
 
+total
 public export
 lemma_data__init_injective : ((i1 = i2) -> Void) -> (MkData d1 o1 i1 = MkData d2 o2 i2) -> Void
 lemma_data__init_injective i1_not_i2 Refl = i1_not_i2 Refl

@@ -16,10 +16,12 @@ data FuncType : Type where
 
 -- Equality
 
+total
 public export
 lemma_functype__inputs_injective : ((in1 = in2) -> Void) -> ((in1 ->> out1) = (in2 ->> out2)) -> Void
 lemma_functype__inputs_injective in1_not_in2 Refl = in1_not_in2 Refl
 
+total
 public export
 lemma_functype__outputs_injective : ((out1 = out2) -> Void) -> ((in1 ->> out1) = (in2 ->> out2)) -> Void
 lemma_functype__outputs_injective out1_not_out2 Refl = out1_not_out2 Refl

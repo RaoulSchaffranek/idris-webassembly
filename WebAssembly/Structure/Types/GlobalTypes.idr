@@ -18,10 +18,12 @@ GlobalType = (Mut, ValType)
 
 -- Equality
 
+total
 public export
 lemma_const_not_var : (the Mut Const) = Var -> Void
 lemma_const_not_var Refl impossible
 
+total
 public export
 lemma_var_not_const : Var = (the Mut Const) -> Void
 lemma_var_not_const Refl impossible

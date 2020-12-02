@@ -23,77 +23,95 @@ record Export where
 
 -- Equality
 
+total
 public export
 lemma_funcexport__injective : ((f1 = f2) -> Void) -> (FuncExport f1 = FuncExport f2) -> Void
 lemma_funcexport__injective f1_not_f2 Refl = f1_not_f2 Refl
 
+total
 public export
 lemma_tableexport__injective : ((t1 = t2) -> Void) -> (TableExport t1 = TableExport t2) -> Void
 lemma_tableexport__injective t1_not_t2 Refl = t1_not_t2 Refl
 
+total
 public export
 lemma_memexport__injective : ((m1 = m2) -> Void) -> (MemExport m1 = MemExport m2) -> Void
 lemma_memexport__injective m1_not_m2 Refl = m1_not_m2 Refl
  
+total
 public export
 lemma_globalexport__injective : ((g1 = g2) -> Void) -> (GlobalExport g1 = GlobalExport g2) -> Void
 lemma_globalexport__injective g1_not_g2 Refl = g1_not_g2 Refl
 
+total
 public export
 lemma_funcexport_not_tableexport : (FuncExport f = TableExport t) -> Void
 lemma_funcexport_not_tableexport Refl impossible
 
+total
 public export
 lemma_funcexport_not_memexport : (FuncExport f = MemExport m) -> Void
 lemma_funcexport_not_memexport Refl impossible
 
+total
 public export
 lemma_funcexport_not_globalexport : (FuncExport f = GlobalExport g) -> Void
 lemma_funcexport_not_globalexport Refl impossible
 
 
+total
 public export
 lemma_tableexport_not_funcexport : (TableExport t = FuncExport f) -> Void
 lemma_tableexport_not_funcexport Refl impossible
 
+total
 public export
 lemma_tableexport_not_memexport : (TableExport t = MemExport m) -> Void
 lemma_tableexport_not_memexport Refl impossible
 
+total
 public export
 lemma_tableexport_not_globalexport : (TableExport t = GlobalExport g) -> Void
 lemma_tableexport_not_globalexport Refl impossible
 
 
+total
 public export
 lemma_memexport_not_tableexport : (MemExport m = TableExport t) -> Void
 lemma_memexport_not_tableexport Refl impossible
 
+total
 public export
 lemma_memexport_not_funcxport : (MemExport m = FuncExport f) -> Void
 lemma_memexport_not_funcxport Refl impossible
 
+total
 public export
 lemma_memexport_not_globalexport : (MemExport m = GlobalExport g) -> Void
 lemma_memexport_not_globalexport Refl impossible
 
 
+total
 public export
 lemma_globalexport_not_tableexport : (GlobalExport g = TableExport t) -> Void
 lemma_globalexport_not_tableexport Refl impossible
 
+total
 public export
 lemma_globalexport_not_funcxport : (GlobalExport g = FuncExport m) -> Void
 lemma_globalexport_not_funcxport Refl impossible
 
+total
 public export
 lemma_globalexport_not_memexport : (GlobalExport g = MemExport m) -> Void
 lemma_globalexport_not_memexport Refl impossible
 
+total
 public export
 lemma_export__name_injective : ((n1 = n2) -> Void) -> (MkExport n1 d1 = MkExport n2 d2) -> Void
 lemma_export__name_injective n1_not_n2 Refl = n1_not_n2 Refl
 
+total
 public export
 lemma_export__desc_injective : ((d1 = d2) -> Void) -> (MkExport n1 d1 = MkExport n2 d2) -> Void
 lemma_export__desc_injective d1_not_d2 Refl = d1_not_d2 Refl

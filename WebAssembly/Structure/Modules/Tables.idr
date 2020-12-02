@@ -15,6 +15,7 @@ record Table where
 
 -- Equality
 
+total
 public export
 lemma_table__type_injective : ((t1 = t2) -> Void) -> (MkTable t1 = MkTable t2) -> Void
 lemma_table__type_injective t1_not_t2 Refl = t1_not_t2 Refl
