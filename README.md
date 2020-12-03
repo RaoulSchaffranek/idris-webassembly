@@ -19,7 +19,7 @@ Possible use cases:
   - [x] Instructions
   - [x] Modules
 - [ ] Validation
-  - [ ] Types
+  - [x] Types
   - [ ] Instructions
   - [ ] Modules
 - [ ] Execution

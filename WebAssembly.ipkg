@@ -28,3 +28,14 @@ modules = WebAssembly
         , WebAssembly.Structure.Modules.StartFunction
         , WebAssembly.Structure.Modules.Exports
         , WebAssembly.Structure.Modules.Imports
+        , WebAssembly.Validation
+        , WebAssembly.Validation.Conventions
+        , WebAssembly.Validation.Conventions.Contexts
+        , WebAssembly.Validation.Types
+        , WebAssembly.Validation.Types.Limits
+        , WebAssembly.Validation.Types.BlockTypes
+        , WebAssembly.Validation.Types.FunctionTypes
+        , WebAssembly.Validation.Types.TableTypes
+        , WebAssembly.Validation.Types.MemoryTypes
+        , WebAssembly.Validation.Types.GlobalTypes
+        , WebAssembly.Validation.Types.ExternalTypes
