@@ -39,3 +39,4 @@ modules = WebAssembly
         , WebAssembly.Validation.Types.MemoryTypes
         , WebAssembly.Validation.Types.GlobalTypes
         , WebAssembly.Validation.Types.ExternalTypes
+        , WebAssembly.Validation.Instructions
