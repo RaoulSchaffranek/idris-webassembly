@@ -14,63 +14,51 @@ data ValType : Type where
 
 -- Equality
 
-total
-public export
+total public export
 lemma_ti32_not_ti64 : (TI32 = TI64) -> Void
 lemma_ti32_not_ti64 Refl impossible
 
-total
-public export
+total public export
 lemma_ti32_not_tf32 : (TI32 = TF32) -> Void
 lemma_ti32_not_tf32 Refl impossible
 
-total
-public export
+total public export
 lemma_ti32_not_tf64 : (TI32 = TF64) -> Void
 lemma_ti32_not_tf64 Refl impossible
 
-total
-public export
+total public export
 lemma_ti64_not_ti32 : (TI64 = TI32) -> Void
 lemma_ti64_not_ti32 Refl impossible
 
-total
-public export
+total public export
 lemma_ti64_not_tf32 : (TI64 = TF32) -> Void
 lemma_ti64_not_tf32 Refl impossible
 
-total
-public export
+total public export
 lemma_ti64_not_tf64 : (TI64 = TF64) -> Void
 lemma_ti64_not_tf64 Refl impossible
 
-total
-public export
+total public export
 lemma_tf32_not_ti32 : (TF32 = TI32) -> Void
 lemma_tf32_not_ti32 Refl impossible
 
-total
-public export
+total public export
 lemma_tf32_not_ti64 : (TF32 = TI64) -> Void
 lemma_tf32_not_ti64 Refl impossible
 
-total
-public export
+total public export
 lemma_tf32_not_tf64 : (TF32 = TF64) -> Void
 lemma_tf32_not_tf64 Refl impossible
 
-total
-public export
+total public export
 lemma_tf64_not_ti32 : (TF64 = TI32) -> Void
 lemma_tf64_not_ti32 Refl impossible
 
-total
-public export
+total public export
 lemma_tf64_not_ti64 : (TF64 = TI64) -> Void
 lemma_tf64_not_ti64 Refl impossible
 
-total
-public export
+total public export
 lemma_tf64_not_tf32 : (TF64 = TF32) -> Void
 lemma_tf64_not_tf32 Refl impossible
 

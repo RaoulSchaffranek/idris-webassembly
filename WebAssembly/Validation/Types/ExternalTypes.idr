@@ -23,58 +23,49 @@ data ValidExternalType : (externType : ExternType) -> Type where
 -- Lemmas about external-type validation
 -------------------------------------------------------------------------------
 
-total
-ext_invalid_func_type : (contra : ValidFunctionType funcType -> Void) -> ValidExternalType (Func funcType) -> Void
+total ext_invalid_func_type : (contra : ValidFunctionType funcType -> Void) -> ValidExternalType (Func funcType) -> Void
 ext_invalid_func_type contra (MkValidExternFunkType (Func funcType) Refl x) = contra x
 ext_invalid_func_type _ (MkValidExternTableType (Func _) Refl _) impossible
 ext_invalid_func_type _ (MkValidExternMemType (Func _) Refl _) impossible
 ext_invalid_func_type _ (MkValidExternGlobalType (Func _) Refl _) impossible
 
-total
-ext_valid_func_type : (prof : ValidFunctionType funcType) -> ValidExternalType (Func funcType)
+total ext_valid_func_type : (prof : ValidFunctionType funcType) -> ValidExternalType (Func funcType)
 ext_valid_func_type (MkValidFunctionType funcType)
   = MkValidExternFunkType (Func funcType) Refl (MkValidFunctionType funcType)
 
-total
-ext_invalid_table_type : (contra : ValidTableType tableType -> Void) -> ValidExternalType (Table tableType) -> Void
+total ext_invalid_table_type : (contra : ValidTableType tableType -> Void) -> ValidExternalType (Table tableType) -> Void
 ext_invalid_table_type _ (MkValidExternFunkType (Table _) Refl _) impossible
 ext_invalid_table_type contra (MkValidExternTableType (Table tableType) Refl x) = contra x
 ext_invalid_table_type _ (MkValidExternMemType (Table _) Refl _) impossible
 ext_invalid_table_type _ (MkValidExternGlobalType (Table _) Refl _) impossible
 
-total
-ext_valid_table_type : (prof : ValidTableType tableType) -> ValidExternalType (Table tableType)
+total ext_valid_table_type : (prof : ValidTableType tableType) -> ValidExternalType (Table tableType)
 ext_valid_table_type (MkValidTableType limits elementType limits_valid)
   = MkValidExternTableType (Table (limits, elementType)) Refl (MkValidTableType limits elementType limits_valid)
 
-total
-ext_invalid_mem_type : (contra : ValidMemoryType memType -> Void) -> ValidExternalType (Mem memType) -> Void
+total ext_invalid_mem_type : (contra : ValidMemoryType memType -> Void) -> ValidExternalType (Mem memType) -> Void
 ext_invalid_mem_type _ (MkValidExternFunkType (Mem _) Refl _) impossible
 ext_invalid_mem_type _ (MkValidExternTableType (Mem _) Refl _) impossible
 ext_invalid_mem_type contra (MkValidExternMemType (Mem memType) Refl x) = contra x
 ext_invalid_mem_type _ (MkValidExternGlobalType (Mem _) Refl _) impossible
 
-total
-ext_valid_mem_type : (prof : ValidMemoryType memType) -> ValidExternalType (Mem memType)
+total ext_valid_mem_type : (prof : ValidMemoryType memType) -> ValidExternalType (Mem memType)
 ext_valid_mem_type (MkValidMemoryType memType limits_valid) = MkValidExternMemType (Mem memType) Refl (MkValidMemoryType memType limits_valid)
 
-total
-ext_invalid_global_type : (contra : ValidGlobalType globalType -> Void) -> ValidExternalType (Global globalType) -> Void
+total ext_invalid_global_type : (contra : ValidGlobalType globalType -> Void) -> ValidExternalType (Global globalType) -> Void
 ext_invalid_global_type _ (MkValidExternFunkType (Global _) Refl _) impossible
 ext_invalid_global_type _ (MkValidExternTableType (Global _) Refl _) impossible
 ext_invalid_global_type _ (MkValidExternMemType (Global _) Refl _) impossible
 ext_invalid_global_type contra (MkValidExternGlobalType (Global globalType) Refl x) = contra x
 
-total
-ext_valid_global_type : (prof : ValidGlobalType globalType) -> ValidExternalType (Global globalType)
+total ext_valid_global_type : (prof : ValidGlobalType globalType) -> ValidExternalType (Global globalType)
 ext_valid_global_type (MkGlobalValidType globalType) = MkValidExternGlobalType (Global globalType) Refl (MkGlobalValidType globalType)
 
 -------------------------------------------------------------------------------
 -- Decidablity of Validation
 -------------------------------------------------------------------------------
 
-total
-public export
+total public export
 isValidExternalType : (externType : ExternType) -> Dec (ValidExternalType externType)
 isValidExternalType (Func funcType) = case (isFunctionTypeValid funcType) of
   No contra => No (ext_invalid_func_type contra)

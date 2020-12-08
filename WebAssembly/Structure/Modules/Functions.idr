@@ -18,18 +18,15 @@ record Func where
 
 -- Equality
 
-total
-public export
+total public export
 lemma_func__type_injective : ((t1 = t2) -> Void) -> (MkFunc t1 l1 b1 = MkFunc t2 l2 b2) -> Void
 lemma_func__type_injective t1_not_t2 Refl = t1_not_t2 Refl
 
-total
-public export
+total public export
 lemma_func__locals_injective : ((l1 = l2) -> Void) -> (MkFunc t1 l1 b1 = MkFunc t2 l2 b2) -> Void
 lemma_func__locals_injective l1_not_l2 Refl = l1_not_l2 Refl
 
-total
-public export
+total public export
 lemma_func__body_injective : ((b1 = b2) -> Void) -> (MkFunc t1 l1 b1 = MkFunc t2 l2 b2) -> Void
 lemma_func__body_injective b1_not_b2 Refl = b1_not_b2 Refl
 

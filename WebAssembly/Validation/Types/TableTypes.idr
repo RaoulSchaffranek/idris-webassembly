@@ -23,16 +23,14 @@ data ValidTableType : TableType -> Type where
 -- Lemmas about table-type validation
 -------------------------------------------------------------------------------
 
-total
-invalid_limit : (contra : ValidLimits limits MAX_LIMIT_TABLE -> Void) -> ValidTableType (limits, elemType) -> Void
+total invalid_limit : (contra : ValidLimits limits MAX_LIMIT_TABLE -> Void) -> ValidTableType (limits, elemType) -> Void
 invalid_limit contra (MkValidTableType limits elemType limits_valid) = contra limits_valid
 
 -------------------------------------------------------------------------------
 -- Decidablity of Validation
 -------------------------------------------------------------------------------
 
-total
-public export
+total public export
 isTableTypeValid : (tableType : TableType) -> Dec (ValidTableType tableType)
 isTableTypeValid (limits, elemType) = case (isLimitsValid limits MAX_LIMIT_TABLE) of
   No contra => No (invalid_limit contra)

@@ -42,36 +42,31 @@ data ValidValTypeBlock : BlockType -> FuncType -> Type where
 -------------------------------------------------------------------------------
 
 ||| If the typeIndex is not present in the context, the block is invalid
-total
-typeidx_out_of_bounds : (c : C) -> (i : TypeIdx)
+total typeidx_out_of_bounds : (c : C) -> (i : TypeIdx)
   -> (out_of_bounds: InBounds i (types c) -> Void)
   -> ValidTypeIdxBlock (Left i) c ft
   -> Void
 typeidx_out_of_bounds c i out_of_bounds (MkValidTypeIdxBlock c i {in_bounds}) = out_of_bounds in_bounds
 
 ||| If the typeIndex is not present in the context, no type can be inferred
-total
-typeidx_out_of_bounds2 : (c : C) -> (i : TypeIdx)
+total typeidx_out_of_bounds2 : (c : C) -> (i : TypeIdx)
   -> (out_of_bounds: InBounds i (types c) -> Void)
   -> (ft ** ValidTypeIdxBlock (Left i) c ft)
   -> Void
 typeidx_out_of_bounds2 c i out_of_bounds (x ** pf) = typeidx_out_of_bounds c i out_of_bounds pf
 
 ||| ValueType-Blocks are never valid TypeIdx-Blocks
-total
-public export
+total public export
 rightTypeIdxVoid : (ValidTypeIdxBlock (Right r) c ft) -> Void
 rightTypeIdxVoid (MkValidTypeIdxBlock _ _) impossible
 
 ||| ValueType-Blocks are never valid TypeIdx-Blocks for a given FuncType
-total
-public export
+total public export
 rightTypeIdxVoid2 : (ft ** ValidTypeIdxBlock (Right r) c ft) -> Void
 rightTypeIdxVoid2 (ft ** bt) = rightTypeIdxVoid bt
 
 ||| Infer the FuncType of some BlockType bt, some TypeIdx i in some Context c
-total
-public export
+total public export
 inferFuncType :  (c : C)
               -> (bt : BlockType)
               -> Dec (ft ** ValidTypeIdxBlock bt c ft)
@@ -85,8 +80,7 @@ inferFuncType c (Left i) = case inBounds i (types c) of
 -------------------------------------------------------------------------------
 
 ||| The bounds-proof does not affect the result of the index-function
-total
-index_proof_irrelevant : {i : TypeIdx, a : Type, xs : List a}
+total index_proof_irrelevant : {i : TypeIdx, a : Type, xs : List a}
   -> (prfA : InBounds i xs)
   -> (prfB: InBounds i xs)
   -> (index i xs {ok = prfA}) = (index i xs {ok = prfB})
@@ -95,16 +89,14 @@ index_proof_irrelevant (InLater prfA') (InLater prfB') = index_proof_irrelevant 
 
 ||| If the FuncType in the context does not match the expected FuncType,
 ||| the block is invalid.
-total
-check_failed : (c : C) -> (i : TypeIdx)
+total check_failed : (c : C) -> (i : TypeIdx)
             -> {auto prfA : InBounds i (types c)}
             -> ((ft = index i (types c)) -> Void)
             -> ValidTypeIdxBlock (Left i) c ft -> Void
 check_failed {prfA} c i contra (MkValidTypeIdxBlock c i {in_bounds=prfB}) = contra (rewrite index_proof_irrelevant prfA prfB in Refl)
 
 ||| Decide whether a given type-index block is valid
-total
-public export
+total public export
 checkFuncType :  (c : C)
               -> (bt : BlockType)
               -> (ft : FuncType) 
@@ -121,21 +113,18 @@ checkFuncType c (Left i) ft = case inBounds i (types c) of
 -------------------------------------------------------------------------------
 
 ||| TypeIdx-Blocks are never valid ValType-Blocks
-total
-public export
+total public export
 leftValTypeVoid : (ValidValTypeBlock (Left l) ft) -> Void
 leftValTypeVoid MkValidBlockWithoutResult impossible
 leftValTypeVoid (MkValidBlockWithResult _) impossible
 
 ||| TypeIdx-Blocks are never valid ValType-Blocks for a given FuncType
-total
-public export
+total public export
 leftValTypeVoid2 : (ft : FuncType ** ValidValTypeBlock (Left l) ft) -> Void
 leftValTypeVoid2 (ft ** bt) = leftValTypeVoid bt
 
 ||| Infer the FuncType of some ValType-Block
-total
-public export
+total public export
 inferValTypeBlock : (bt : BlockType) -> Dec (ft ** ValidValTypeBlock bt ft)
 inferValTypeBlock (Left l) = No leftValTypeVoid2
 inferValTypeBlock (Right Nothing) = Yes $ ([] ->> [] ** MkValidBlockWithoutResult)
@@ -154,8 +143,7 @@ valtype_with_result_check_failed : (contra : (ft = ([] ->> [vt])) -> Void) -> Va
 valtype_with_result_check_failed contra (MkValidBlockWithResult vt) = contra Refl
 
 ||| Check the type of some ValType-block
-total
-public export
+total public export
 checkValTypeBlock : (bt: BlockType) -> (ft : FuncType) -> Dec (ValidValTypeBlock bt ft)
 checkValTypeBlock (Left l) ft = No leftValTypeVoid
 checkValTypeBlock (Right Nothing) ft = case decEq ft ([] ->> []) of

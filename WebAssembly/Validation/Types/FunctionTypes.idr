@@ -15,7 +15,6 @@ data ValidFunctionType : (funcType : FuncType) -> Type where
 -- Decidablity of Validation
 -------------------------------------------------------------------------------
 
-total
-public export
+total public export
 isFunctionTypeValid : (funcType : FuncType) -> Dec (ValidFunctionType funcType)
 isFunctionTypeValid funcType = Yes (MkValidFunctionType funcType)

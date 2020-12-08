@@ -29,26 +29,22 @@ data ValidLimits : Limits -> Nat -> Type where
 -------------------------------------------------------------------------------
 
 ||| If the lower bound of a limit without an upper bound is larger than k, then we the limit is invalid
-total
-lower_bound_invalid_upper_bound_absent : (LTE n k -> Void) -> (ValidLimits (MkLimits n Nothing) k -> Void)
+total lower_bound_invalid_upper_bound_absent : (LTE n k -> Void) -> (ValidLimits (MkLimits n Nothing) k -> Void)
 lower_bound_invalid_upper_bound_absent not_n_lte_k (MkValidLowerBound _ n_lte_k) = not_n_lte_k n_lte_k
 lower_bound_invalid_upper_bound_absent not_n_lte_k (MkValidLimits _ n_lte_k _ _) = not_n_lte_k n_lte_k
 
 ||| If the lower bound of a limit with lower and upper bounds is larger than k, then we the limit is invalid
-total
-lower_bound_invalid_upper_bound_present : (LTE n k -> Void) -> (ValidLimits (MkLimits n (Just m)) k -> Void)
+total lower_bound_invalid_upper_bound_present : (LTE n k -> Void) -> (ValidLimits (MkLimits n (Just m)) k -> Void)
 lower_bound_invalid_upper_bound_present _ (MkValidLowerBound Refl _) impossible
 lower_bound_invalid_upper_bound_present not_n_lte_k (MkValidLimits Refl n_lte_k _ _) = not_n_lte_k n_lte_k
 
 ||| If the upper bound of a limit is larger than k, then the limit is invalid
-total
-upper_bound_invalid : (LTE m k -> Void) -> (ValidLimits (MkLimits n (Just m)) k -> Void)
+total upper_bound_invalid : (LTE m k -> Void) -> (ValidLimits (MkLimits n (Just m)) k -> Void)
 upper_bound_invalid _ (MkValidLowerBound Refl _) impossible
 upper_bound_invalid not_m_lte_k (MkValidLimits Refl _ m_lte_k _) = not_m_lte_k m_lte_k
 
 ||| If the lower bound is greater than the upper bound, then the limit is invalid
-total
-lower_bound_greater_than_upper_bound : (LTE n m -> Void) -> (ValidLimits (MkLimits n (Just m)) k -> Void)
+total lower_bound_greater_than_upper_bound : (LTE n m -> Void) -> (ValidLimits (MkLimits n (Just m)) k -> Void)
 lower_bound_greater_than_upper_bound _ (MkValidLowerBound Refl _) impossible
 lower_bound_greater_than_upper_bound not_n_lte_m (MkValidLimits Refl _ _ n_lte_m) = not_n_lte_m n_lte_m
 
@@ -57,8 +53,7 @@ lower_bound_greater_than_upper_bound not_n_lte_m (MkValidLimits Refl _ _ n_lte_m
 -------------------------------------------------------------------------------
 
 ||| Decide whether a given limit is valid for some given k
-total
-public export
+total public export
 isLimitsValid : (limits : Limits) -> (k : Nat) -> Dec (ValidLimits limits k)
 isLimitsValid (MkLimits n Nothing) k = 
   case isLTE n k of

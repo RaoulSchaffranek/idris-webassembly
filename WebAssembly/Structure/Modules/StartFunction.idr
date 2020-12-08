@@ -14,8 +14,7 @@ record Start where
 
 -- Equality
 
-total
-public export
+total public export
 lemma_start__func_injective : ((f1 = f2) -> Void) -> (MkStart f1 = MkStart f2) -> Void
 lemma_start__func_injective f1_not_f2 Refl = f1_not_f2 Refl
 

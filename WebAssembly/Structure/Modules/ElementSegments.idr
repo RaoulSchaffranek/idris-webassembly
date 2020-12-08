@@ -18,18 +18,15 @@ record Elem where
 
 -- Equality
 
-total
-public export
+total public export
 lemma_elem__type_injective : ((t1 = t2) -> Void) -> (MkElem t1 o1 i1 = MkElem t2 o2 i2) -> Void
 lemma_elem__type_injective t1_not_t2 Refl = t1_not_t2 Refl
 
-total
-public export
+total public export
 lemma_elem__offset_injective : ((o1 = o2) -> Void) -> (MkElem t1 o1 i1 = MkElem t2 o2 i2) -> Void
 lemma_elem__offset_injective o1_not_o2 Refl = o1_not_o2 Refl
 
-total
-public export
+total public export
 lemma_elem__init_injective : ((i1 = i2) -> Void) -> (MkElem t1 o1 i1 = MkElem t2 o2 i2) -> Void
 lemma_elem__init_injective i1_not_i2 Refl = i1_not_i2 Refl
 

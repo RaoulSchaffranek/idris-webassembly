@@ -25,16 +25,14 @@ data ValidMemoryType : MemType -> Type where
 -- Lemmas about memory-type validation
 -------------------------------------------------------------------------------
 
-total
-invalid_limit_mem : (contra : ValidLimits memType MAX_LIMIT_MEMORY -> Void) -> ValidMemoryType memType -> Void
+total invalid_limit_mem : (contra : ValidLimits memType MAX_LIMIT_MEMORY -> Void) -> ValidMemoryType memType -> Void
 invalid_limit_mem contra (MkValidMemoryType memType limits_valid) = contra limits_valid
 
 -------------------------------------------------------------------------------
 -- Decidability of validation
 -------------------------------------------------------------------------------
 
-total
-public export
+total public export
 isMemoryTypeValid : (memType : MemType) -> Dec (ValidMemoryType memType)
 isMemoryTypeValid memType = case (isLimitsValid memType MAX_LIMIT_MEMORY) of
   No contra => No (invalid_limit_mem contra)

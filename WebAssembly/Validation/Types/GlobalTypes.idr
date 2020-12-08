@@ -15,7 +15,6 @@ data ValidGlobalType : GlobalType -> Type where
 -- Decidablity of Validation
 -------------------------------------------------------------------------------
 
-total
-public export
+total public export
 isGlobalTypeValid : (globalType : GlobalType) -> Dec (ValidGlobalType globalType)
 isGlobalTypeValid globalType = Yes (MkGlobalValidType globalType)

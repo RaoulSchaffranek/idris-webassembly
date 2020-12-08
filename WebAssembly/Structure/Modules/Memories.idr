@@ -14,8 +14,7 @@ record Mem where
 
 -- Equality
 
-total
-public export
+total public export
 lemma_mem__type_injective : ((m1 = m2) -> Void) -> (MkMem m1 = MkMem m2) -> Void
 lemma_mem__type_injective m1_not_m2 Refl = m1_not_m2 Refl
 

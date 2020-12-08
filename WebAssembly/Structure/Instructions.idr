@@ -209,8 +209,7 @@ Expr = List Instr
 
 -- Decidable Equality
 
-total
-public export
+total public export
 instrMaybeEqual : (i1 : Instr) -> (i2 : Instr)     -> Maybe (i1 = i2)
 instrMaybeEqual Unreachable       Unreachable       = Just Refl
 instrMaybeEqual Nop               Nop               = Just Refl

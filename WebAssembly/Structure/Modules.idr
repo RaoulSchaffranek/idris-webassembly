@@ -33,80 +33,70 @@ record Module where
 
 -- Equality
 
-total
-public export
+total public export
 lemma_module__types_injective : ((ty1 = ty2) -> Void)
   -> ( MkModule ty1 fu1 ta1 me1 gl1 el1 da1 st1 im1 ex1
      = MkModule ty2 fu2 ta2 me2 gl2 el2 da2 st2 im2 ex2)
   -> Void
 lemma_module__types_injective ty1_not_ty2 Refl = ty1_not_ty2 Refl
 
-total
-public export
+total public export
 lemma_module__funcs_injective : ((fu1 = fu2) -> Void)
   -> ( MkModule ty1 fu1 ta1 me1 gl1 el1 da1 st1 im1 ex1
      = MkModule ty2 fu2 ta2 me2 gl2 el2 da2 st2 im2 ex2)
   -> Void
 lemma_module__funcs_injective fu1_not_fu2 Refl = fu1_not_fu2 Refl
 
-total
-public export
+total public export
 lemma_module__tables_injective : ((ta1 = ta2) -> Void)
   -> ( MkModule ty1 fu1 ta1 me1 gl1 el1 da1 st1 im1 ex1
      = MkModule ty2 fu2 ta2 me2 gl2 el2 da2 st2 im2 ex2)
   -> Void
 lemma_module__tables_injective ta1_not_ta2 Refl = ta1_not_ta2 Refl
 
-total
-public export
+total public export
 lemma_module__mems_injective : ((me1 = me2) -> Void)
   -> ( MkModule ty1 fu1 ta1 me1 gl1 el1 da1 st1 im1 ex1
      = MkModule ty2 fu2 ta2 me2 gl2 el2 da2 st2 im2 ex2)
   -> Void
 lemma_module__mems_injective me1_not_me2 Refl = me1_not_me2 Refl
 
-total
-public export
+total public export
 lemma_module__globals_injective : ((gl1 = gl2) -> Void)
   -> ( MkModule ty1 fu1 ta1 me1 gl1 el1 da1 st1 im1 ex1
      = MkModule ty2 fu2 ta2 me2 gl2 el2 da2 st2 im2 ex2)
   -> Void
 lemma_module__globals_injective gl1_not_gl2 Refl = gl1_not_gl2 Refl
 
-total
-public export
+total public export
 lemma_module__elem_injective : ((el1 = el2) -> Void)
   -> ( MkModule ty1 fu1 ta1 me1 gl1 el1 da1 st1 im1 ex1
      = MkModule ty2 fu2 ta2 me2 gl2 el2 da2 st2 im2 ex2)
   -> Void
 lemma_module__elem_injective el1_not_el2 Refl = el1_not_el2 Refl
 
-total
-public export
+total public export
 lemma_module__data_injective : ((da1 = da2) -> Void)
   -> ( MkModule ty1 fu1 ta1 me1 gl1 el1 da1 st1 im1 ex1
      = MkModule ty2 fu2 ta2 me2 gl2 el2 da2 st2 im2 ex2)
   -> Void
 lemma_module__data_injective da1_not_da2 Refl = da1_not_da2 Refl
 
-total
-public export
+total public export
 lemma_module__start_injective : ((st1 = st2) -> Void)
   -> ( MkModule ty1 fu1 ta1 me1 gl1 el1 da1 st1 im1 ex1
      = MkModule ty2 fu2 ta2 me2 gl2 el2 da2 st2 im2 ex2)
   -> Void
 lemma_module__start_injective st1_not_st2 Refl = st1_not_st2 Refl
 
-total
-public export
+total public export
 lemma_module__imports_injective : ((im1 = im2) -> Void)
   -> ( MkModule ty1 fu1 ta1 me1 gl1 el1 da1 st1 im1 ex1
      = MkModule ty2 fu2 ta2 me2 gl2 el2 da2 st2 im2 ex2)
   -> Void
 lemma_module__imports_injective im1_not_im2 Refl = im1_not_im2 Refl
 
-total
-public export
+total public export
 lemma_module__exports_injective : ((ex1 = ex2) -> Void)
   -> ( MkModule ty1 fu1 ta1 me1 gl1 el1 da1 st1 im1 ex1
      = MkModule ty2 fu2 ta2 me2 gl2 el2 da2 st2 im2 ex2)

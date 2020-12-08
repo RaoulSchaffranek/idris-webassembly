@@ -16,13 +16,11 @@ record Global where
 
 -- Equality
 
-total
-public export
+total public export
 lemma_global__type_injective : ((t1 = t2) -> Void) -> (MkGlobal t1 i1 = MkGlobal t2 i2) -> Void
 lemma_global__type_injective t1_not_t2 Refl = t1_not_t2 Refl
 
-total
-public export
+total public export
 lemma_global__init_injective : ((i1 = i2) -> Void) -> (MkGlobal t1 i1 = MkGlobal t2 i2) -> Void
 lemma_global__init_injective i1_not_i2 Refl = i1_not_i2 Refl
 
