@@ -10,7 +10,7 @@ import WebAssembly.Validation.Conventions
 
 ||| Valid blocks
 public export
-data ValidBlockType : BlockType -> C -> FuncType -> Type where
+data ValidBlockType : C -> BlockType -> FuncType -> Type where
   ||| Proof that a BlockType is valid for some given type-index
   |||
   |||   C.types[typeidx] = functype
@@ -19,19 +19,19 @@ data ValidBlockType : BlockType -> C -> FuncType -> Type where
   |||
   MkValidTypeIdxBlock : (c : C) -> (i : TypeIdx)
     -> {auto in_bounds: InBounds i (types c)}
-    -> ValidBlockType (Left i) c (index i (types c))
+    -> ValidBlockType c (Left i) (index i (types c))
   ||| Proof that a BlockType without result-type is valid
   |||
   |||-------------------------------------
   |||   C ⊢ [] : [] -> []
   |||
-  MkValidBlockWithoutResult : (c : C) -> ValidBlockType (Right Nothing) c ([] ->> [])
+  MkValidBlockWithoutResult : (c : C) -> ValidBlockType c (Right Nothing) ([] ->> [])
   ||| Proof that a BlockType with some result-type is valid
   |||
   |||-------------------------------------
   |||   C ⊢ [valtype] : [] -> [valtype]
   |||
-  MkValidBlockWithResult : (c : C) -> (t : ValType) -> ValidBlockType (Right (Just t)) c ([] ->> [t])
+  MkValidBlockWithResult : (c : C) -> (t : ValType) -> ValidBlockType c (Right (Just t)) ([] ->> [t])
 
 -------------------------------------------------------------------------------
 -- Type Inference
@@ -41,7 +41,7 @@ data ValidBlockType : BlockType -> C -> FuncType -> Type where
 total
 typeidx_out_of_bounds : (c : C) -> (i : TypeIdx)
   -> (out_of_bounds: InBounds i (types c) -> Void)
-  -> ValidBlockType (Left i) c ft
+  -> ValidBlockType c (Left i) ft
   -> Void
 typeidx_out_of_bounds c i out_of_bounds (MkValidTypeIdxBlock c i {in_bounds}) = out_of_bounds in_bounds
 
@@ -49,7 +49,7 @@ typeidx_out_of_bounds c i out_of_bounds (MkValidTypeIdxBlock c i {in_bounds}) = 
 total
 typeidx_out_of_bounds2 : (c : C) -> (i : TypeIdx)
   -> (out_of_bounds: InBounds i (types c) -> Void)
-  -> (ft ** ValidBlockType (Left i) c ft)
+  -> (ft ** ValidBlockType c (Left i) ft)
   -> Void
 typeidx_out_of_bounds2 c i out_of_bounds (x ** pf) = typeidx_out_of_bounds c i out_of_bounds pf
 
@@ -58,7 +58,7 @@ typeidx_out_of_bounds2 c i out_of_bounds (x ** pf) = typeidx_out_of_bounds c i o
 total public export
 inferBlockType : (c : C)
               -> (bt : BlockType)
-              -> Dec (ft ** ValidBlockType bt c ft)
+              -> Dec (ft ** ValidBlockType c bt ft)
 inferBlockType c (Right Nothing) = Yes $ ([] ->> [] ** MkValidBlockWithoutResult c)
 inferBlockType c (Right (Just vt)) = Yes $ ([] ->> [vt] ** MkValidBlockWithResult c vt)
 inferBlockType c (Left i) = case inBounds i (types c) of
@@ -84,17 +84,17 @@ total
 check_failed : (c : C) -> (i : TypeIdx)
             -> {auto prfA : InBounds i (types c)}
             -> ((ft = index i (types c)) -> Void)
-            -> ValidBlockType (Left i) c ft -> Void
+            -> ValidBlockType c (Left i) ft -> Void
 check_failed {prfA} c i contra (MkValidTypeIdxBlock c i {in_bounds=prfB}) = contra (rewrite index_proof_irrelevant prfA prfB in Refl)
 
 ||| If the expected type does not match the actual type, the check fails
 total
-valtype_without_result_check_failed : (contra : (ft = ([] ->> [])) -> Void) -> ValidBlockType (Right Nothing) c ft -> Void
+valtype_without_result_check_failed : (contra : (ft = ([] ->> [])) -> Void) -> ValidBlockType c (Right Nothing) ft -> Void
 valtype_without_result_check_failed contra (MkValidBlockWithoutResult c) = contra Refl
 
 ||| If the expected type does not match the actual type, the check fails
 total
-valtype_with_result_check_failed : (contra : (ft = ([] ->> [vt])) -> Void) -> ValidBlockType (Right (Just vt)) c ft -> Void
+valtype_with_result_check_failed : (contra : (ft = ([] ->> [vt])) -> Void) -> ValidBlockType c (Right (Just vt)) ft -> Void
 valtype_with_result_check_failed contra (MkValidBlockWithResult c vt) = contra Refl
 
 ||| Typecheck a BlockType
@@ -102,7 +102,7 @@ total public export
 checkBlockType :  (c : C)
               -> (bt : BlockType)
               -> (ft : FuncType) 
-              -> Dec (ValidBlockType bt c ft)
+              -> Dec (ValidBlockType c bt ft)
 checkBlockType c (Right Nothing) ft = case decEq ft ([] ->> []) of
   No contra => No (valtype_without_result_check_failed contra)
   Yes Refl  => Yes $ MkValidBlockWithoutResult c
