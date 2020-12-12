@@ -99,17 +99,17 @@ valtype_with_result_check_failed contra (MkValidBlockWithResult c vt) = contra R
 
 ||| Typecheck a BlockType
 total public export
-checkFuncType :  (c : C)
+checkBlockType :  (c : C)
               -> (bt : BlockType)
               -> (ft : FuncType) 
               -> Dec (ValidBlockType bt c ft)
-checkFuncType c (Right Nothing) ft = case decEq ft ([] ->> []) of
+checkBlockType c (Right Nothing) ft = case decEq ft ([] ->> []) of
   No contra => No (valtype_without_result_check_failed contra)
   Yes Refl  => Yes $ MkValidBlockWithoutResult c
-checkFuncType c (Right (Just vt)) ft = case decEq ft ([] ->> [vt]) of
+checkBlockType c (Right (Just vt)) ft = case decEq ft ([] ->> [vt]) of
   No contra => No (valtype_with_result_check_failed contra)
   Yes Refl  => Yes $ MkValidBlockWithResult c vt
-checkFuncType c (Left i) ft = case inBounds i (types c) of
+checkBlockType c (Left i) ft = case inBounds i (types c) of
   No out_of_bounds => No $ typeidx_out_of_bounds c i out_of_bounds
   Yes in_bounds    => case decEq ft (index i (types c)) of
     No contra => No (check_failed c i contra)
