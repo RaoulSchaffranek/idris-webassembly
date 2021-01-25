@@ -12,7 +12,7 @@ public export
 record MemArg where
   constructor MkMemArg
   offset : U32
-  algin  : U32
+  align  : U32
 
 -- Equality
 
