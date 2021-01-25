@@ -19,6 +19,34 @@ record C where
   labels  : List ResultType
   return  : Maybe ResultType
 
+total public export
+prependTypes : List FuncType -> C -> C
+prependTypes xs = record {types $= ((++) xs)}
+
+total public export
+prependFuncs : List FuncType -> C -> C
+prependFuncs xs = record {funcs $= ((++) xs)}
+
+total public export
+prependTables : List TableType -> C -> C
+prependTables xs = record {tables $= ((++) xs)}
+
+total public export
+prependMems : List MemType -> C -> C
+prependMems xs = record {mems $= ((++) xs)}
+
+total public export
+prependGlobals : List GlobalType -> C -> C
+prependGlobals xs = record {globals $= ((++) xs)}
+
+total public export
+prependLocals : List ValType -> C -> C
+prependLocals xs = record {locals $= ((++) xs)}
+
+total public export
+prependLabels : List ResultType -> C -> C
+prependLabels xs = record {labels $= ((++) xs)}
+
 -- Equality
 
 total public export

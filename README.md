@@ -20,7 +20,7 @@ Possible use cases:
   - [x] Modules
 - [ ] Validation
   - [x] Types
-  - [ ] Instructions
+  - [x] Instructions
   - [ ] Modules
 - [ ] Execution
   - [ ] Runtime Structure
@@ -37,3 +37,9 @@ Possible use cases:
   - [ ] Types
   - [ ] Insructions
   - [ ] Modules
+
+
+## Commands
+
+Typecheck Package: `idris --checkpkg .\WebAssembly.ipkg`
+Generate Documentation: `idris --mkdoc .\WebAssembly.ipkg`
