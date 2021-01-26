@@ -1821,3 +1821,24 @@ mutual
     ||| ```
     MkValidI64TruncSatF64U   : (c : C)
                             -> ValidInstr c I64TruncSatF64U ([TF64] ->> [TI64])
+
+||| [🔗Spec](https://webassembly.github.io/spec/core/valid/instructions.html#valid-constant)
+public export
+data ConstInstr : (c : C) -> Instr -> Type where
+  MkConstI32       : (c : C) -> ConstInstr c (I32Const v)
+  MkConstI64       : (c : C) -> ConstInstr c (I64Const v)
+  MkConstF32       : (c : C) -> ConstInstr c (F32Const v)
+  MkConstF64       : (c : C) -> ConstInstr c (F64Const v)
+  MkConstGlobalGet : (c : C)
+                  -> {auto in_bounds: InBounds x (globals c)}
+                  -> (index x (globals c) = (Const, t))
+                  -> ConstInstr c (GlobalGet x)
+
+||| [🔗Spec](https://webassembly.github.io/spec/core/valid/instructions.html#valid-constant)
+public export
+data ConstExpr : (c : C) -> List Instr -> Type where
+  MkConstExprEmpty : (c : C) -> ConstExpr c []
+  MkConstExprCons  : (c : C)
+                  -> ConstInstr c instr
+                  -> ConstExpr c expr
+                  -> ConstExpr c (instr::expr)

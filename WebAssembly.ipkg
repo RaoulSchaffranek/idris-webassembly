@@ -40,3 +40,4 @@ modules = WebAssembly
         , WebAssembly.Validation.Types.GlobalTypes
         , WebAssembly.Validation.Types.ExternalTypes
         , WebAssembly.Validation.Instructions
+        , WebAssembly.Validation.Modules
