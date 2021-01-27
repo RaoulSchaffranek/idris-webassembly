@@ -10,14 +10,14 @@ import WebAssembly.Validation.Conventions
 
 ||| Valid blocks
 public export
-data ValidBlockType : C -> BlockType -> FuncType -> Type where
+data ValidBlockType : Context -> BlockType -> FuncType -> Type where
   ||| Proof that a BlockType is valid for some given type-index
   |||
   |||   C.types[typeidx] = functype
   |||-----------------------------------
   |||      C ⊢ typeidx : functype
   |||
-  MkValidTypeIdxBlock : (c : C) -> (i : TypeIdx)
+  MkValidTypeIdxBlock : (c : Context) -> (i : TypeIdx)
     -> {auto in_bounds: InBounds i (types c)}
     -> ValidBlockType c (Left i) (index i (types c))
   ||| Proof that a BlockType without result-type is valid
@@ -25,13 +25,13 @@ data ValidBlockType : C -> BlockType -> FuncType -> Type where
   |||-------------------------------------
   |||   C ⊢ [] : [] -> []
   |||
-  MkValidBlockWithoutResult : (c : C) -> ValidBlockType c (Right Nothing) ([] ->> [])
+  MkValidBlockWithoutResult : (c : Context) -> ValidBlockType c (Right Nothing) ([] ->> [])
   ||| Proof that a BlockType with some result-type is valid
   |||
   |||-------------------------------------
   |||   C ⊢ [valtype] : [] -> [valtype]
   |||
-  MkValidBlockWithResult : (c : C) -> (t : ValType) -> ValidBlockType c (Right (Just t)) ([] ->> [t])
+  MkValidBlockWithResult : (c : Context) -> (t : ValType) -> ValidBlockType c (Right (Just t)) ([] ->> [t])
 
 -------------------------------------------------------------------------------
 -- Type Inference
@@ -39,7 +39,7 @@ data ValidBlockType : C -> BlockType -> FuncType -> Type where
 
 ||| If the typeIndex is not present in the context, the block is invalid
 total
-typeidx_out_of_bounds : (c : C) -> (i : TypeIdx)
+typeidx_out_of_bounds : (c : Context) -> (i : TypeIdx)
   -> (out_of_bounds: InBounds i (types c) -> Void)
   -> ValidBlockType c (Left i) ft
   -> Void
@@ -47,7 +47,7 @@ typeidx_out_of_bounds c i out_of_bounds (MkValidTypeIdxBlock c i {in_bounds}) = 
 
 ||| If the typeIndex is not present in the context, no type can be inferred
 total
-typeidx_out_of_bounds2 : (c : C) -> (i : TypeIdx)
+typeidx_out_of_bounds2 : (c : Context) -> (i : TypeIdx)
   -> (out_of_bounds: InBounds i (types c) -> Void)
   -> (ft ** ValidBlockType c (Left i) ft)
   -> Void
@@ -56,7 +56,7 @@ typeidx_out_of_bounds2 c i out_of_bounds (x ** pf) = typeidx_out_of_bounds c i o
 
 ||| Infer the FuncType of some BlockType
 total public export
-inferBlockType : (c : C)
+inferBlockType : (c : Context)
               -> (bt : BlockType)
               -> Dec (ft ** ValidBlockType c bt ft)
 inferBlockType c (Right Nothing) = Yes $ ([] ->> [] ** MkValidBlockWithoutResult c)
@@ -81,7 +81,7 @@ index_proof_irrelevant (InLater prfA') (InLater prfB') = index_proof_irrelevant 
 ||| If the FuncType in the context does not match the expected FuncType,
 ||| the block is invalid.
 total
-check_failed : (c : C) -> (i : TypeIdx)
+check_failed : (c : Context) -> (i : TypeIdx)
             -> {auto prfA : InBounds i (types c)}
             -> ((ft = index i (types c)) -> Void)
             -> ValidBlockType c (Left i) ft -> Void
@@ -99,7 +99,7 @@ valtype_with_result_check_failed contra (MkValidBlockWithResult c vt) = contra R
 
 ||| Typecheck a BlockType
 total public export
-checkBlockType :  (c : C)
+checkBlockType :  (c : Context)
               -> (bt : BlockType)
               -> (ft : FuncType) 
               -> Dec (ValidBlockType c bt ft)

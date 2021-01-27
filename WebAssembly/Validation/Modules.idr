@@ -13,8 +13,8 @@ import WebAssembly.Validation.Instructions
 ||| C ⊢ {type x, locals t*, body expr} : [t1*] -> [t2*]
 ||| ```
 public export
-data ValidFunc : C -> Func -> FuncType -> Type where
- MkValidFunc : (c : C)
+data ValidFunc : Context -> Func -> FuncType -> Type where
+ MkValidFunc : (c : Context)
             -> (x : TypeIdx)
             -> (t : ResultType)
             -> (t1 : ResultType)
@@ -33,8 +33,8 @@ data ValidFunc : C -> Func -> FuncType -> Type where
 ||| C ⊢ {type tabletype} : tabletype
 ||| ```
 public export
-data ValidTable : C -> Table -> TableType -> Type where
-  MkValidTable : (c : C)
+data ValidTable : Context -> Table -> TableType -> Type where
+  MkValidTable : (c : Context)
               -> (tabletype : TableType)
               -> ValidTableType tabletype
               -> ValidTable c (MkTable tableype) tabletype
@@ -48,8 +48,8 @@ data ValidTable : C -> Table -> TableType -> Type where
 ||| C ⊢ {type memtype} : memtype
 ||| ```
 public export
-data ValidMem : C -> Mem -> MemType -> Type where
-  MkValidMem : (c : C)
+data ValidMem : Context -> Mem -> MemType -> Type where
+  MkValidMem : (c : Context)
             -> (memtype : MemType)
             -> ValidMemoryType memtype
             -> ValidMem c (MkMem memtype) memtype
@@ -62,8 +62,8 @@ data ValidMem : C -> Mem -> MemType -> Type where
 ||| C ⊢ {type mut t, init expr} : mut t
 ||| ```
 public export
-data ValidGlobal : C -> Global -> GlobalType -> Type where
-  MkValidGlobal : (c : C)
+data ValidGlobal : Context -> Global -> GlobalType -> Type where
+  MkValidGlobal : (c : Context)
                -> (mut : Mut)
                -> (t : ValType)
                -> (expr : Expr)
@@ -80,8 +80,8 @@ data ValidGlobal : C -> Global -> GlobalType -> Type where
 ||| C ⊢ {table x, offset expr, init y*} ok
 ||| ```
 public export
-data ValidElem : (c : C) -> Elem -> Type where
-  MkValidElem  : (c : C)
+data ValidElem : (c : Context) -> Elem -> Type where
+  MkValidElem  : (c : Context)
               -> (x : TableIdx)
               -> (expr : Expr)
               -> (ys : List FuncIdx)
@@ -99,8 +99,8 @@ data ValidElem : (c : C) -> Elem -> Type where
 ||| C ⊢ {data x, offset expr, init b*} ok
 ||| ```
 public export
-data ValidData : (c : C) -> Data -> Type where
-  MkValidData  : (c : C)
+data ValidData : (c : Context) -> Data -> Type where
+  MkValidData  : (c : Context)
               -> (x : MemIdx)
               -> (expr : Expr)
               -> (bs : List Byte)
@@ -117,8 +117,8 @@ data ValidData : (c : C) -> Data -> Type where
 ||| C ⊢ {func x} ok
 ||| ```
 public export
-data ValidStart : (c : C) -> Start -> Type where
-  MkValidStart : (c : C)
+data ValidStart : (c : Context) -> Start -> Type where
+  MkValidStart : (c : Context)
               -> (x : FuncIdx)
               -> {auto in_bounds: InBounds x (funcs c)}
               -> (index x (funcs c) = ([] ->> []))
@@ -126,7 +126,7 @@ data ValidStart : (c : C) -> Start -> Type where
 
 ||| [🔗 Spec](https://webassembly.github.io/spec/core/valid/modules.html#exports)
 public export
-data ValidExportDesc : (c : C) -> ExportDesc -> ExternType -> Type where
+data ValidExportDesc : (c : Context) -> ExportDesc -> ExternType -> Type where
 
   ||| [🔗 Spec](https://webassembly.github.io/spec/core/valid/modules.html#xref-syntax-modules-syntax-exportdesc-mathsf-func-x)
   |||
@@ -135,7 +135,7 @@ data ValidExportDesc : (c : C) -> ExportDesc -> ExternType -> Type where
   ||| --------------------------
   ||| C ⊢ func x : func functype
   ||| ```
-  MkValidExternalFunc    : (c : C)
+  MkValidExternalFunc    : (c : Context)
                         -> (x : FuncIdx)
                         -> {auto in_bounds: InBounds x (funcs c)}
                         -> ValidExportDesc c (FuncExport x) (Func (index x (funcs c)))
@@ -147,7 +147,7 @@ data ValidExportDesc : (c : C) -> ExportDesc -> ExternType -> Type where
   ||| --------------------------
   ||| C ⊢ table x : table tabletype
   ||| ```
-  MkValidExternalTable   : (c : C)
+  MkValidExternalTable   : (c : Context)
                         -> (x : TableIdx)
                         -> {auto in_bounds: InBounds x (tables c)}
                         -> ValidExportDesc c (TableExport x) (Table (index x (tables c)))
@@ -159,7 +159,7 @@ data ValidExportDesc : (c : C) -> ExportDesc -> ExternType -> Type where
   ||| --------------------------
   ||| C ⊢ mem x : mem memtype
   ||| ```
-  MkValidExternalMem     : (c : C)
+  MkValidExternalMem     : (c : Context)
                         -> (x : MemIdx)
                         -> {auto in_bounds: InBounds x (mems c)}
                         -> ValidExportDesc c (MemExport x) (Mem (index x (mems c)))
@@ -171,7 +171,7 @@ data ValidExportDesc : (c : C) -> ExportDesc -> ExternType -> Type where
   ||| --------------------------
   ||| C ⊢ global x : global globaltype
   ||| ```
-  MkValidExternalGlobal  : (c : C) 
+  MkValidExternalGlobal  : (c : Context) 
                         -> (x : GlobalIdx)
                         -> {auto in_bounds: InBounds x (globals c)}
                         -> ValidExportDesc c (GlobalExport x) (Global (index x (globals c)))
@@ -179,7 +179,7 @@ data ValidExportDesc : (c : C) -> ExportDesc -> ExternType -> Type where
 
 ||| [🔗 Spec](https://webassembly.github.io/spec/core/valid/modules.html#exports)
 public export
-data ValidExport : (c : C) -> Export -> ExternType -> Type where
+data ValidExport : (c : Context) -> Export -> ExternType -> Type where
 
   ||| [🔗 Spec](https://webassembly.github.io/spec/core/valid/modules.html#xref-syntax-modules-syntax-export-mathsf-name-xref-syntax-values-syntax-name-mathit-name-xref-syntax-modules-syntax-export-mathsf-desc-xref-syntax-modules-syntax-exportdesc-mathit-exportdesc)
   |||
@@ -188,7 +188,7 @@ data ValidExport : (c : C) -> Export -> ExternType -> Type where
   ||| ---------------------------------------------
   ||| C ⊢ {name name, desc exportdesc} : externtype
   ||| ```
-  MkValidExport  : (c : C)
+  MkValidExport  : (c : Context)
                 -> (name : Name)
                 -> (desc : ExportDesc)
                 -> ValidExportDesc c desc externType

@@ -8,7 +8,7 @@ import Decidable.Equality
 -- Definition
 
 public export
-record C where
+record Context where
   constructor MkC
   types   : List FuncType
   funcs   : List FuncType
@@ -20,31 +20,31 @@ record C where
   return  : Maybe ResultType
 
 total public export
-prependTypes : List FuncType -> C -> C
+prependTypes : List FuncType -> Context -> Context
 prependTypes xs = record {types $= ((++) xs)}
 
 total public export
-prependFuncs : List FuncType -> C -> C
+prependFuncs : List FuncType -> Context -> Context
 prependFuncs xs = record {funcs $= ((++) xs)}
 
 total public export
-prependTables : List TableType -> C -> C
+prependTables : List TableType -> Context -> Context
 prependTables xs = record {tables $= ((++) xs)}
 
 total public export
-prependMems : List MemType -> C -> C
+prependMems : List MemType -> Context -> Context
 prependMems xs = record {mems $= ((++) xs)}
 
 total public export
-prependGlobals : List GlobalType -> C -> C
+prependGlobals : List GlobalType -> Context -> Context
 prependGlobals xs = record {globals $= ((++) xs)}
 
 total public export
-prependLocals : List ValType -> C -> C
+prependLocals : List ValType -> Context -> Context
 prependLocals xs = record {locals $= ((++) xs)}
 
 total public export
-prependLabels : List ResultType -> C -> C
+prependLabels : List ResultType -> Context -> Context
 prependLabels xs = record {labels $= ((++) xs)}
 
 -- Equality
@@ -100,7 +100,7 @@ lemma_c__return_injective re1_not_re2 Refl = re1_not_re2 Refl
 -- Decidable Equality
 
 public export
-implementation DecEq C where
+implementation DecEq Context where
   decEq (MkC ty1 fu1 ta1 me1 gl1 lo1 la1 re1) (MkC ty2 fu2 ta2 me2 gl2 lo2 la2 re2)
     = case decEq ty1 ty2 of
         No ty1_not_ty2 => No $ lemma_c__types_injective ty1_not_ty2
