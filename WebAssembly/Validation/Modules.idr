@@ -13,13 +13,17 @@ import WebAssembly.Validation.Instructions
 ||| C ⊢ {type x, locals t*, body expr} : [t1*] -> [t2*]
 ||| ```
 public export
-data ValidFunc : (c : C) -> Func -> FuncType -> Type where
+data ValidFunc : C -> Func -> FuncType -> Type where
  MkValidFunc : (c : C)
-            -> (func : Func)
-            -> {auto in_bounds: InBounds (type func) (types c)}
-            -> (index (type func) (types c) = (t1 ->> t2))
-            -> ValidSequence (record {locals $= (t1 ++), labels = [t2], return = (Just t2)} c) (body func) ([] ->> t2)
-            -> ValidFunc c func (t1 ->> t2)
+            -> (x : TypeIdx)
+            -> (t : ResultType)
+            -> (t1 : ResultType)
+            -> (t2 : ResultType)
+            -> (expr : Expr)
+            -> {auto in_bounds: InBounds x (types c)}
+            -> (index x (types c) = (t1 ->> t2))
+            -> ValidSequence (record {locals = (t1 ++ t), labels = [t2], return = (Just t2)} c) expr ([] ->> t2)
+            -> ValidFunc c (MkFunc x t expr) (t1 ->> t2)
 
 ||| [🔗 Spec](https://webassembly.github.io/spec/core/valid/modules.html#tables)
 |||
@@ -29,11 +33,11 @@ data ValidFunc : (c : C) -> Func -> FuncType -> Type where
 ||| C ⊢ {type tabletype} : tabletype
 ||| ```
 public export
-data ValidTable : (c : C) -> Table -> TableType -> Type where
+data ValidTable : C -> Table -> TableType -> Type where
   MkValidTable : (c : C)
-              -> (table : Table)
-              -> ValidTableType (type table)
-              -> ValidTable c table (type table)
+              -> (tabletype : TableType)
+              -> ValidTableType tabletype
+              -> ValidTable c (MkTable tableype) tabletype
 
               
 ||| [🔗 Spec](https://webassembly.github.io/spec/core/valid/modules.html#memories)
@@ -44,11 +48,11 @@ data ValidTable : (c : C) -> Table -> TableType -> Type where
 ||| C ⊢ {type memtype} : memtype
 ||| ```
 public export
-data ValidMem : (c : C) -> Mem -> MemType -> Type where
+data ValidMem : C -> Mem -> MemType -> Type where
   MkValidMem : (c : C)
-            -> (mem : Mem)
-            -> ValidMemoryType (type mem)
-            -> ValidMem c mem (type mem)
+            -> (memtype : MemType)
+            -> ValidMemoryType memtype
+            -> ValidMem c (MkMem memtype) memtype
 
 ||| [🔗 Spec](https://webassembly.github.io/spec/core/valid/modules.html#globals)
 |||
@@ -58,13 +62,15 @@ data ValidMem : (c : C) -> Mem -> MemType -> Type where
 ||| C ⊢ {type mut t, init expr} : mut t
 ||| ```
 public export
-data ValidGlobal : (c : C) -> Global -> GlobalType -> Type where
+data ValidGlobal : C -> Global -> GlobalType -> Type where
   MkValidGlobal : (c : C)
-               -> (global : Global)
-               -> ValidGlobalType (type global)
-               -> ValidSequence c (init global) ([] ->> t)
-               -> ConstExpr c (init global)
-               -> ValidGlobal c global (type global)
+               -> (mut : Mut)
+               -> (t : ValType)
+               -> (expr : Expr)
+               -> ValidGlobalType (mut, t)
+               -> ValidSequence c expr ([] ->> [t])
+               -> ConstExpr c expr
+               -> ValidGlobal c (MkGlobal (mut, t) expr) (mut, t)
 
 ||| [🔗 Spec](https://webassembly.github.io/spec/core/valid/modules.html#element-segments)
 |||
@@ -76,12 +82,14 @@ data ValidGlobal : (c : C) -> Global -> GlobalType -> Type where
 public export
 data ValidElem : (c : C) -> Elem -> Type where
   MkValidElem  : (c : C)
-              -> (elem : Elem)
-              -> {auto in_bounds: InBounds (table elem) (tables c)}
-              -> ValidSequence c (offset elem) ([] ->> [TI32])
-              -> ConstExpr c (offset elem)
-              -> (InBounds y (init elem) -> InBounds y (funcs c))
-              -> ValidElem c elem
+              -> (x : TableIdx)
+              -> (expr : Expr)
+              -> (ys : List FuncIdx)
+              -> {auto in_bounds: InBounds x (tables c)}
+              -> ValidSequence c expr ([] ->> [TI32])
+              -> ConstExpr c expr
+              -> (InBounds y ys -> InBounds y (funcs c))
+              -> ValidElem c (MkElem x expr ys)
 
 ||| [🔗 Spec](https://webassembly.github.io/spec/core/valid/modules.html#data-segments)
 |||
@@ -93,11 +101,13 @@ data ValidElem : (c : C) -> Elem -> Type where
 public export
 data ValidData : (c : C) -> Data -> Type where
   MkValidData  : (c : C)
-              -> (d : Data)
-              -> {auto in_bounds: InBounds (wdata d) (mems c)}
-              -> ValidSequence c (offset d) ([] ->> [TI32])
-              -> ConstExpr c (offset d)
-              -> ValidData c d
+              -> (x : MemIdx)
+              -> (expr : Expr)
+              -> (bs : List Byte)
+              -> {auto in_bounds: InBounds x (mems c)}
+              -> ValidSequence c expr ([] ->> [TI32])
+              -> ConstExpr c expr
+              -> ValidData c (MkData x expr bs)
 
 ||| [🔗 Spec](https://webassembly.github.io/spec/core/valid/modules.html#start-function)
 |||
@@ -109,10 +119,10 @@ data ValidData : (c : C) -> Data -> Type where
 public export
 data ValidStart : (c : C) -> Start -> Type where
   MkValidStart : (c : C)
-              -> (start : Start)
-              -> {auto in_bounds: InBounds (func start) (funcs c)}
-              -> (index (func start) (funcs c) = ([] ->> []))
-              -> ValidStart c start
+              -> (x : FuncIdx)
+              -> {auto in_bounds: InBounds x (funcs c)}
+              -> (index x (funcs c) = ([] ->> []))
+              -> ValidStart c (MkStart x)
 
 ||| [🔗 Spec](https://webassembly.github.io/spec/core/valid/modules.html#exports)
 public export
