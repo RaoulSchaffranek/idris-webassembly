@@ -80,7 +80,7 @@ data ValidGlobal : Context -> Global -> GlobalType -> Type where
 ||| C ⊢ {table x, offset expr, init y*} ok
 ||| ```
 public export
-data ValidElem : (c : Context) -> Elem -> Type where
+data ValidElem : Context -> Elem -> Type where
   MkValidElem  : (c : Context)
               -> (x : TableIdx)
               -> (expr : Expr)
@@ -99,7 +99,7 @@ data ValidElem : (c : Context) -> Elem -> Type where
 ||| C ⊢ {data x, offset expr, init b*} ok
 ||| ```
 public export
-data ValidData : (c : Context) -> Data -> Type where
+data ValidData : Context -> Data -> Type where
   MkValidData  : (c : Context)
               -> (x : MemIdx)
               -> (expr : Expr)
@@ -117,7 +117,7 @@ data ValidData : (c : Context) -> Data -> Type where
 ||| C ⊢ {func x} ok
 ||| ```
 public export
-data ValidStart : (c : Context) -> Start -> Type where
+data ValidStart : Context -> Start -> Type where
   MkValidStart : (c : Context)
               -> (x : FuncIdx)
               -> {auto in_bounds: InBounds x (funcs c)}
@@ -126,7 +126,7 @@ data ValidStart : (c : Context) -> Start -> Type where
 
 ||| [🔗 Spec](https://webassembly.github.io/spec/core/valid/modules.html#exports)
 public export
-data ValidExportDesc : (c : Context) -> ExportDesc -> ExternType -> Type where
+data ValidExportDesc : Context -> ExportDesc -> ExternType -> Type where
 
   ||| [🔗 Spec](https://webassembly.github.io/spec/core/valid/modules.html#xref-syntax-modules-syntax-exportdesc-mathsf-func-x)
   |||
@@ -179,7 +179,7 @@ data ValidExportDesc : (c : Context) -> ExportDesc -> ExternType -> Type where
 
 ||| [🔗 Spec](https://webassembly.github.io/spec/core/valid/modules.html#exports)
 public export
-data ValidExport : (c : Context) -> Export -> ExternType -> Type where
+data ValidExport : Context -> Export -> ExternType -> Type where
 
   ||| [🔗 Spec](https://webassembly.github.io/spec/core/valid/modules.html#xref-syntax-modules-syntax-export-mathsf-name-xref-syntax-values-syntax-name-mathit-name-xref-syntax-modules-syntax-export-mathsf-desc-xref-syntax-modules-syntax-exportdesc-mathit-exportdesc)
   |||
