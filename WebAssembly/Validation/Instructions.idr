@@ -21,7 +21,9 @@ mutual
     ||| > ---------------
     ||| > C ⊢ epsilon : ft
     ||| > ```
-    ValidEmpty : (c : Context) -> (ft : FuncType) -> ValidSequence c [] ft
+    ValidEmpty : (c : Context)
+              -> (ft : FuncType)
+              -> ValidSequence c [] ft
 
     ||| Non-Empty Instruction Sequence
     |||
@@ -32,7 +34,13 @@ mutual
     ||| -----------------------------------------------------------
     ||| C ⊢ instr∗ instr : [t1∗] -> [t0∗ t3∗]
     ||| ```
-    ValidCons  : (c : Context)
+    ValidCons  : (c  : Context)
+              -> (is : List Instr)
+              -> (i  : Instr)
+              -> (t0 : ResultType)
+              -> (t1 : ResultType)
+              -> (t3 : ResultType)
+              -> (t  : ResultType)
               -> ValidSequence c is (t1 ->> (t0 ++ t))
               -> ValidInstr c i (t ->> t3)
               -> ValidSequence c (is ++ [i]) (t1 ->> (t0 ++ t3)) 
@@ -73,7 +81,11 @@ mutual
     ||| -----------------------------------------------------------------------
     ||| C ⊢ block blocktype instr∗ end : [t1∗] -> [t2∗]
     ||| ```
-    MkValidBlock             : (c : Context)
+    MkValidBlock             : (c  : Context)
+                            -> (bt : BlockType)
+                            -> (is : List Instr)
+                            -> (t1 : ResultType)
+                            -> (t2 : ResultType)
                             -> ValidBlockType c bt (t1 ->> t2)
                             -> ValidSequence (prependLabels [t2] c) is (t1 ->> t2)
                             -> ValidInstr c (Block bt is) (t1 ->> t2)
@@ -85,7 +97,11 @@ mutual
     ||| -----------------------------------------------------------------------
     ||| C ⊢ loop blocktype instr∗ end : [t1∗] -> [t2∗]
     ||| ```
-    MkValidLoop              : (c : Context)
+    MkValidLoop              : (c  : Context)
+                            -> (bt : BlockType)
+                            -> (is : List Instr)
+                            -> (t1 : ResultType)
+                            -> (t2 : ResultType)
                             -> ValidBlockType c bt (t1 ->> t2)
                             -> ValidSequence (prependLabels [t1] c) is (t1 ->> t2)
                             -> ValidInstr c (Loop bt is) (t1 ->> t2)
@@ -97,7 +113,12 @@ mutual
     ||| --------------------------------------------------------------------------------------------------------------------
     ||| C ⊢ if blocktype instr1∗ else instr2∗ end : [t1∗ i32] -> [t2∗]
     ||| ```
-    MkValidIf                : (c : Context)
+    MkValidIf                : (c  : Context)
+                            -> (bt : BlockType)
+                            -> (is : List Instr)
+                            -> (js : List Instr)
+                            -> (t1 : ResultType)
+                            -> (t2 : ResultType)
                             -> ValidBlockType c bt (t1 ->> t2)
                             -> ValidSequence (prependLabels [t2] c) is (t1 ->> t2)
                             -> ValidSequence (prependLabels [t2] c) js (t1 ->> t2)
@@ -110,10 +131,12 @@ mutual
     ||| ---------------------------
     ||| C ⊢ br l : [t1∗ t] -> [t2∗]
     ||| ```
-    MkValidBr                : (c : Context)
+    MkValidBr                : (c  : Context)
+                            -> (l  : LabelIdx)
+                            -> (t1 : ResultType)
+                            -> (t2 : ResultType)
                             -> {auto in_bounds: InBounds l (labels c)}
-                            -> ((index l (labels c)) = t)
-                            -> ValidInstr c (Br l) ((t1 ++ t) ->> t2)
+                            -> ValidInstr c (Br l) ((t1 ++ (index l (labels c))) ->> t2)
 
     ||| [🔗 Spec](https://webassembly.github.io/spec/core/valid/instructions.html#xref-syntax-instructions-syntax-instr-control-mathsf-br-if-l)
     |||
@@ -123,9 +146,9 @@ mutual
     ||| C ⊢ br_if l : [t∗ TI32] -> [t∗]
     ||| ```
     MkValidBrIf              : (c : Context)
+                            -> (l : LabelIdx)
                             -> {auto in_bounds: InBounds l (labels c)}
-                            -> ((index l (labels c)) = t)
-                            -> ValidInstr c (BrIf l) ((t ++ [TI32]) ->> t)
+                            -> ValidInstr c (BrIf l) (((index l (labels c)) ++ [TI32]) ->> (index l (labels c)))
     
     ||| [🔗 Spec](https://webassembly.github.io/spec/core/valid/instructions.html#xref-syntax-instructions-syntax-instr-control-mathsf-br-table-l-ast-l-n)
     |||
@@ -135,10 +158,16 @@ mutual
     ||| C ⊢ br_table l∗ lN : [t1∗ t∗ i32] -> [t2∗]
     ||| ```
     MkValidBrTable           : (c : Context)
-                            -> (Elem li ls -> {auto in_bounds_i: InBounds li (labels c)} -> ((index li (labels c)) = t))
+                            -> (ls : List LabelIdx)
+                            -> (lN : LabelIdx)
+                            -> (t1 : ResultType)
+                            -> (t2 : ResultType)
                             -> {auto in_bounds: InBounds lN (labels c)}
-                            -> ((index lN (labels c)) = t)
-                            -> ValidInstr c (BrTable ls ln) ((t1 ++ t ++ [TI32]) ->> t2)
+                            -> ( (li : LabelIdx)
+                              -> Elem li ls
+                              -> {auto in_bounds_i: InBounds li (labels c)}
+                              -> ((index li (labels c)) = (index lN (labels c))))
+                            -> ValidInstr c (BrTable ls lN) ((t1 ++ (index lN (labels c)) ++ [TI32]) ->> t2)
     
     ||| [🔗 Spec](https://webassembly.github.io/spec/core/valid/instructions.html#xref-syntax-instructions-syntax-instr-control-mathsf-return)
     |||
@@ -147,7 +176,10 @@ mutual
     ||| ------------------------------
     ||| C ⊢ return : [t1∗ t∗] -> [t2∗]
     ||| ```
-    MkValidReturn            : (c : Context)
+    MkValidReturn            : (c  : Context)
+                            -> (t1 : ResultType)
+                            -> (t2 : ResultType)
+                            -> (t  : ResultType)
                             -> (return c = Just t)
                             -> ValidInstr c (Return) ((t1 ++ t) ->> t2)
 
@@ -161,8 +193,7 @@ mutual
     MkValidCall              : (c : Context)
                             -> (x : FuncIdx)
                             -> {auto in_bounds: InBounds x (funcs c)}
-                            -> ((index x (funcs c)) = (t1 ->> t2))
-                            -> ValidInstr c (Call x) (t1 ->> t2)
+                            -> ValidInstr c (Call x) (index x (funcs c))
 
     ||| [🔗 Spec](https://webassembly.github.io/spec/core/valid/instructions.html#xref-syntax-instructions-syntax-instr-control-mathsf-call-indirect-x)
     |||
@@ -171,10 +202,11 @@ mutual
     ||| ------------------------------------------------------------
     ||| C ⊢ call_indirect x : [t1* i32] -> [t2*]
     ||| ```
-    MkValidCallIndirect      : (c : Context)
-                            -> (x : TypeIdx)
+    MkValidCallIndirect      : (c  : Context)
+                            -> (x  : TypeIdx)
+                            -> (t1 : ResultType)
+                            -> (t2 : ResultType)
                             -> {auto in_bounds_0: InBounds 0 (tables c)}
-                            -> ((snd (index 0 (tables c))) = FuncRef)
                             -> {auto in_bounds_x: InBounds x (types c)}
                             -> ((index x (types c)) = (t1 ->> t2))
                             -> ValidInstr c (CallIndirect x) ((t1 ++ [TI32]) ->> t2)
@@ -209,8 +241,7 @@ mutual
     MkValidLocalGet          : (c : Context)
                             -> (x : LocalIdx)
                             -> {auto in_bounds: InBounds x (locals c)}
-                            -> ((index x (locals c)) = t)
-                            -> ValidInstr c (LocalGet x) ([] ->> [t])
+                            -> ValidInstr c (LocalGet x) ([] ->> [index x (locals c)])
 
     ||| [🔗 Spec](https://webassembly.github.io/spec/core/valid/instructions.html#xref-syntax-instructions-syntax-instr-variable-mathsf-local-set-x)
     |||
@@ -222,8 +253,7 @@ mutual
     MkValidLocalSet          : (c : Context)
                             -> (x : LocalIdx)
                             -> {auto in_bounds: InBounds x (locals c)}
-                            -> ((index x (locals c)) = t)
-                            -> ValidInstr c (LocalSet x) ([t] ->> [])
+                            -> ValidInstr c (LocalSet x) ([index x (locals c)] ->> [])
 
     ||| [🔗 Spec](https://webassembly.github.io/spec/core/valid/instructions.html#xref-syntax-instructions-syntax-instr-variable-mathsf-local-tee-x)
     |||
@@ -235,8 +265,7 @@ mutual
     MkValidLocalTee          : (c : Context)
                             -> (x : LocalIdx)
                             -> {auto in_bounds: InBounds x (locals c)}
-                            -> ((index x (locals c)) = t)
-                            -> ValidInstr c (LocalTee x) ([t] ->> [t])
+                            -> ValidInstr c (LocalTee x) ([index x (locals c)] ->> [index x (locals c)])
 
     ||| [🔗 Spec](https://webassembly.github.io/spec/core/valid/instructions.html#xref-syntax-instructions-syntax-instr-variable-mathsf-global-get-x)
     |||
@@ -248,8 +277,7 @@ mutual
     MkValidGlobalGet         : (c : Context)
                             -> (x : GlobalIdx)
                             -> {auto in_bounds: InBounds x (globals c)}
-                            -> ((index x (globals c)) = (mut, t))
-                            -> ValidInstr c (GlobalGet x) ([] ->> [t])
+                            -> ValidInstr c (GlobalGet x) ([] ->> [snd (index x (globals c))])
 
     ||| [🔗 Spec](https://webassembly.github.io/spec/core/valid/instructions.html#xref-syntax-instructions-syntax-instr-variable-mathsf-global-set-x)
     |||
@@ -260,6 +288,7 @@ mutual
     ||| ```
     MkValidGlobalSet         : (c : Context)
                             -> (x : GlobalIdx)
+                            -> (t : ValType)
                             -> {auto in_bounds: InBounds x (globals c)}
                             -> ((index x (globals c)) = (Var, t))
                             -> ValidInstr c (GlobalSet x) ([] ->> [t])
@@ -271,7 +300,8 @@ mutual
     ||| ------------------------------------------------
     ||| C ⊢ t.load memarg : [i32] -> [t]
     ||| ```
-    MkValidI32Load           : (c : Context)
+    MkValidI32Load           : (c      : Context)
+                            -> (memarg : MemArg)
                             -> {auto in_bounds: InBounds 0 (mems c)}
                             -> LTE (power 2 (align memarg)) 4
                             -> ValidInstr c (I32Load memarg) ([TI32] ->> [TI32])
@@ -283,7 +313,8 @@ mutual
     ||| ------------------------------------------------
     ||| C ⊢ t.load memarg : [i32] -> [t]
     ||| ```
-    MkValidI64Load           : (c : Context)
+    MkValidI64Load           : (c      : Context)
+                            -> (memarg : MemArg)
                             -> {auto in_bounds: InBounds 0 (mems c)}
                             -> LTE (power 2 (align memarg)) 8
                             -> ValidInstr c (I64Load memarg) ([TI32] ->> [TI64])
@@ -295,7 +326,8 @@ mutual
     ||| ------------------------------------------------
     ||| C ⊢ t.load memarg : [i32] -> [t]
     ||| ```
-    MkValidF32Load           : (c : Context)
+    MkValidF32Load           : (c      : Context)
+                            -> (memarg : MemArg)
                             -> {auto in_bounds: InBounds 0 (mems c)}
                             -> LTE (power 2 (align memarg)) 4
                             -> ValidInstr c (F32Load memarg) ([TI32] ->> [TF32])
@@ -307,7 +339,8 @@ mutual
     ||| ------------------------------------------------
     ||| C ⊢ t.load memarg : [i32] -> [t]
     ||| ```
-    MkValidF64Load           : (c : Context)
+    MkValidF64Load           : (c      : Context)
+                            -> (memarg : MemArg)
                             -> {auto in_bounds: InBounds 0 (mems c)}
                             -> LTE (power 2 (align memarg)) 8
                             -> ValidInstr c (F64Load memarg) ([TI32] ->> [TF64])
@@ -319,7 +352,8 @@ mutual
     ||| ------------------------------------------------
     ||| C ⊢ t.load memarg : [i32] -> [t]
     ||| ```
-    MkValidI32Load8S         : (c : Context)
+    MkValidI32Load8S         : (c      : Context)
+                            -> (memarg : MemArg)
                             -> {auto in_bounds: InBounds 0 (mems c)}
                             -> LTE (power 2 (align memarg)) 1
                             -> ValidInstr c (I32Load8S memarg) ([TI32] ->> [TI32])
@@ -331,7 +365,8 @@ mutual
     ||| ------------------------------------------------
     ||| C ⊢ t.load memarg : [i32] -> [t]
     ||| ```
-    MkValidI32Load8U         : (c : Context)
+    MkValidI32Load8U         : (c      : Context)
+                            -> (memarg : MemArg)
                             -> {auto in_bounds: InBounds 0 (mems c)}
                             -> LTE (power 2 (align memarg)) 1
                             -> ValidInstr c (I32Load8U memarg) ([TI32] ->> [TI32])
@@ -343,7 +378,8 @@ mutual
     ||| ------------------------------------------------
     ||| C ⊢ t.load memarg : [i32] -> [t]
     ||| ```
-    MkValidI32Load16S        : (c : Context)
+    MkValidI32Load16S        : (c      : Context)
+                            -> (memarg : MemArg)
                             -> {auto in_bounds: InBounds 0 (mems c)}
                             -> LTE (power 2 (align memarg)) 2
                             -> ValidInstr c (I32Load16S memarg) ([TI32] ->> [TI32])
@@ -355,7 +391,8 @@ mutual
     ||| ------------------------------------------------
     ||| C ⊢ t.load memarg : [i32] -> [t]
     ||| ```
-    MkValidI32Load16U        : (c : Context)
+    MkValidI32Load16U        : (c      : Context)
+                            -> (memarg : MemArg)
                             -> {auto in_bounds: InBounds 0 (mems c)}
                             -> LTE (power 2 (align memarg)) 2
                             -> ValidInstr c (I32Load16U memarg) ([TI32] ->> [TI32])
@@ -367,7 +404,8 @@ mutual
     ||| ------------------------------------------------
     ||| C ⊢ t.load memarg : [i32] -> [t]
     ||| ```
-    MkValidI64Load8S         : (c : Context)
+    MkValidI64Load8S         : (c      : Context)
+                            -> (memarg : MemArg)
                             -> {auto in_bounds: InBounds 0 (mems c)}
                             -> LTE (power 2 (align memarg)) 1
                             -> ValidInstr c (I64Load8S memarg) ([TI32] ->> [TI64])
@@ -379,7 +417,8 @@ mutual
     ||| ------------------------------------------------
     ||| C ⊢ t.load memarg : [i32] -> [t]
     ||| ```
-    MkValidI64Load8U         : (c : Context)
+    MkValidI64Load8U         : (c      : Context)
+                            -> (memarg : MemArg)
                             -> {auto in_bounds: InBounds 0 (mems c)}
                             -> LTE (power 2 (align memarg)) 1
                             -> ValidInstr c (I64Load8U memarg) ([TI32] ->> [TI64])
@@ -391,7 +430,8 @@ mutual
     ||| ------------------------------------------------
     ||| C ⊢ t.load memarg : [i32] -> [t]
     ||| ```
-    MkValidI64Load16S        : (c : Context)
+    MkValidI64Load16S        : (c      : Context)
+                            -> (memarg : MemArg)
                             -> {auto in_bounds: InBounds 0 (mems c)}
                             -> LTE (power 2 (align memarg)) 2
                             -> ValidInstr c (I64Load16S memarg) ([TI32] ->> [TI64])
@@ -403,7 +443,8 @@ mutual
     ||| ------------------------------------------------
     ||| C ⊢ t.load memarg : [i32] -> [t]
     ||| ```
-    MkValidI64Load16U        : (c : Context)
+    MkValidI64Load16U        : (c      : Context)
+                            -> (memarg : MemArg)
                             -> {auto in_bounds: InBounds 0 (mems c)}
                             -> LTE (power 2 (align memarg)) 2
                             -> ValidInstr c (I64Load16U memarg) ([TI32] ->> [TI64])
@@ -415,7 +456,8 @@ mutual
     ||| ------------------------------------------------
     ||| C ⊢ t.load memarg : [i32] -> [t]
     ||| ```
-    MkValidI64Load32S        : (c : Context)
+    MkValidI64Load32S        : (c      : Context)
+                            -> (memarg : MemArg)
                             -> {auto in_bounds: InBounds 0 (mems c)}
                             -> LTE (power 2 (align memarg)) 4
                             -> ValidInstr c (I64Load32S memarg) ([TI32] ->> [TI64])
@@ -427,7 +469,8 @@ mutual
     ||| ------------------------------------------------
     ||| C ⊢ t.load memarg : [i32] -> [t]
     ||| ```
-    MkValidI64Load32U        : (c : Context)
+    MkValidI64Load32U        : (c      : Context)
+                            -> (memarg : MemArg)
                             -> {auto in_bounds: InBounds 0 (mems c)}
                             -> LTE (power 2 (align memarg)) 4
                             -> ValidInstr c (I64Load32U memarg) ([TI32] ->> [TI64])
@@ -439,7 +482,8 @@ mutual
     ||| ------------------------------------------------
     ||| C ⊢ t.load memarg : [i32 t] -> []
     ||| ```
-    MkValidI32Store          : (c : Context)
+    MkValidI32Store          : (c      : Context)
+                            -> (memarg : MemArg)
                             -> {auto in_bounds: InBounds 0 (mems c)}
                             -> LTE (power 2 (align memarg)) 4
                             -> ValidInstr c (I32Store memarg) ([TI32, TI32] ->> [])
@@ -451,7 +495,8 @@ mutual
     ||| ------------------------------------------------
     ||| C ⊢ t.load memarg : [i32 t] -> []
     ||| ```
-    MkValidI64Store          : (c : Context)
+    MkValidI64Store          : (c      : Context)
+                            -> (memarg : MemArg)
                             -> {auto in_bounds: InBounds 0 (mems c)}
                             -> LTE (power 2 (align memarg)) 8
                             -> ValidInstr c (I64Store memarg) ([TI32, TI64] ->> [])
@@ -463,7 +508,8 @@ mutual
     ||| ------------------------------------------------
     ||| C ⊢ t.load memarg : [i32 t] -> []
     ||| ```
-    MkValidF32Store          : (c : Context)
+    MkValidF32Store          : (c      : Context)
+                            -> (memarg : MemArg)
                             -> {auto in_bounds: InBounds 0 (mems c)}
                             -> LTE (power 2 (align memarg)) 4
                             -> ValidInstr c (F32Store memarg) ([TI32, TF32] ->> [])
@@ -475,7 +521,8 @@ mutual
     ||| ------------------------------------------------
     ||| C ⊢ t.load memarg : [i32 t] -> []
     ||| ```
-    MkValidF64Store          : (c : Context)
+    MkValidF64Store          : (c      : Context)
+                            -> (memarg : MemArg)
                             -> {auto in_bounds: InBounds 0 (mems c)}
                             -> LTE (power 2 (align memarg)) 8
                             -> ValidInstr c (F64Store memarg) ([TI32, TF64] ->> [])
@@ -487,7 +534,8 @@ mutual
     ||| ----------------------------------------------
     ||| C ⊢ t.load memarg : [i32 t] -> []
     ||| ```
-    MkValidI32Store8         : (c : Context)
+    MkValidI32Store8         : (c      : Context)
+                            -> (memarg : MemArg)
                             -> {auto in_bounds: InBounds 0 (mems c)}
                             -> LTE (power 2 (align memarg)) 1
                             -> ValidInstr c (I32Store8 memarg) ([TI32, TI32] ->> [])
@@ -499,7 +547,8 @@ mutual
     ||| ----------------------------------------------
     ||| C ⊢ t.load memarg : [i32 t] -> []
     ||| ```
-    MkValidI32Store16        : (c : Context)
+    MkValidI32Store16        : (c      : Context)
+                            -> (memarg : MemArg)
                             -> {auto in_bounds: InBounds 0 (mems c)}
                             -> LTE (power 2 (align memarg)) 2
                             -> ValidInstr c (I32Store16 memarg) ([TI32, TI32] ->> [])
@@ -511,7 +560,8 @@ mutual
     ||| ----------------------------------------------
     ||| C ⊢ t.load memarg : [i32 t] -> []
     ||| ```
-    MkValidI64Store8         : (c : Context)
+    MkValidI64Store8         : (c      : Context)
+                            -> (memarg : MemArg)
                             -> {auto in_bounds: InBounds 0 (mems c)}
                             -> LTE (power 2 (align memarg)) 1
                             -> ValidInstr c (I64Store8 memarg) ([TI32, TI64] ->> [])
@@ -523,7 +573,8 @@ mutual
     ||| ----------------------------------------------
     ||| C ⊢ t.load memarg : [i32 t] -> []
     ||| ```
-    MkValidI64Store16        : (c : Context)
+    MkValidI64Store16        : (c      : Context)
+                            -> (memarg : MemArg)
                             -> {auto in_bounds: InBounds 0 (mems c)}
                             -> LTE (power 2 (align memarg)) 2
                             -> ValidInstr c (I64Store16 memarg) ([TI32, TI64] ->> [])
@@ -535,7 +586,8 @@ mutual
     ||| ----------------------------------------------
     ||| C ⊢ t.load memarg : [i32 t] -> []
     ||| ```
-    MkValidI64Store32        : (c : Context)
+    MkValidI64Store32        : (c      : Context)
+                            -> (memarg : MemArg)
                             -> {auto in_bounds: InBounds 0 (mems c)}
                             -> LTE (power 2 (align memarg)) 4
                             -> ValidInstr c (I64Store32 memarg) ([TI32, TI64] ->> [])
@@ -568,8 +620,9 @@ mutual
     ||| -------------------------
     ||| C ⊢ t.const c : [] -> [t] 
     ||| ```
-    MkValidI32Const          : (c : Context)
-                            -> ValidInstr c (I32Const ci32) ([] ->> [TI32])
+    MkValidI32Const          : (c   : Context)
+                            -> (i32 : I32)
+                            -> ValidInstr c (I32Const i32) ([] ->> [TI32])
     
     ||| [🔗 Spec](https://webassembly.github.io/spec/core/valid/instructions.html#t-mathsf-xref-syntax-instructions-syntax-instr-numeric-mathsf-const-c)
     |||
@@ -577,8 +630,9 @@ mutual
     ||| -------------------------
     ||| C ⊢ t.const c : [] -> [t] 
     ||| ```
-    MkValidI64Const          : (c : Context)
-                            -> ValidInstr c (I64Const ci64) ([] ->> [TI64])
+    MkValidI64Const          : (c   : Context)
+                            -> (i64 : I64)
+                            -> ValidInstr c (I64Const i64) ([] ->> [TI64])
     
     ||| [🔗 Spec](https://webassembly.github.io/spec/core/valid/instructions.html#t-mathsf-xref-syntax-instructions-syntax-instr-numeric-mathsf-const-c)
     |||
@@ -586,8 +640,9 @@ mutual
     ||| -------------------------
     ||| C ⊢ t.const c : [] -> [t] 
     ||| ```
-    MkValidF32Const          : (c : Context)
-                            -> ValidInstr c (F32Const cf32) ([] ->> [TF32])
+    MkValidF32Const          : (c   : Context)
+                            -> (f32 : F32)
+                            -> ValidInstr c (F32Const f32) ([] ->> [TF32])
     
     ||| [🔗 Spec](https://webassembly.github.io/spec/core/valid/instructions.html#t-mathsf-xref-syntax-instructions-syntax-instr-numeric-mathsf-const-c)
     |||
@@ -595,8 +650,9 @@ mutual
     ||| -------------------------
     ||| C ⊢ t.const c : [] -> [t] 
     ||| ```
-    MkValidF64Const          : (c : Context)
-                            -> ValidInstr c (F64Const cf64) ([] ->> [TF64])
+    MkValidF64Const          : (c   : Context)
+                            -> (f64 : F64)
+                            -> ValidInstr c (F64Const f64) ([] ->> [TF64])
     
     ||| [🔗 Spec](https://webassembly.github.io/spec/core/valid/instructions.html#t-mathsf-xref-syntax-instructions-syntax-testop-mathit-testop)
     |||
@@ -1825,11 +1881,13 @@ mutual
 ||| [🔗Spec](https://webassembly.github.io/spec/core/valid/instructions.html#valid-constant)
 public export
 data ConstInstr : (c : Context) -> Instr -> Type where
-  MkConstI32       : (c : Context) -> ConstInstr c (I32Const v)
-  MkConstI64       : (c : Context) -> ConstInstr c (I64Const v)
-  MkConstF32       : (c : Context) -> ConstInstr c (F32Const v)
-  MkConstF64       : (c : Context) -> ConstInstr c (F64Const v)
+  MkConstI32       : (c : Context) -> (i32 : I32) -> ConstInstr c (I32Const i32)
+  MkConstI64       : (c : Context) -> (i64 : I64) -> ConstInstr c (I64Const i64)
+  MkConstF32       : (c : Context) -> (f32 : F32) -> ConstInstr c (F32Const f32)
+  MkConstF64       : (c : Context) -> (f64 : F64) -> ConstInstr c (F64Const f64)
   MkConstGlobalGet : (c : Context)
+                  -> (x : GlobalIdx)
+                  -> (t : ValType)
                   -> {auto in_bounds: InBounds x (globals c)}
                   -> (index x (globals c) = (Const, t))
                   -> ConstInstr c (GlobalGet x)
@@ -1838,7 +1896,9 @@ data ConstInstr : (c : Context) -> Instr -> Type where
 public export
 data ConstExpr : (c : Context) -> List Instr -> Type where
   MkConstExprEmpty : (c : Context) -> ConstExpr c []
-  MkConstExprCons  : (c : Context)
+  MkConstExprCons  : (c     : Context)
+                  -> (instr : Instr)
+                  -> (expr  : Expr)
                   -> ConstInstr c instr
                   -> ConstExpr c expr
                   -> ConstExpr c (instr::expr)
