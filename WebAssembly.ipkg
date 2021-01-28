@@ -41,3 +41,11 @@ modules = WebAssembly
         , WebAssembly.Validation.Types.ExternalTypes
         , WebAssembly.Validation.Instructions
         , WebAssembly.Validation.Modules
+        , WebAssembly.Validation.Modules.Functions
+        , WebAssembly.Validation.Modules.Tables
+        , WebAssembly.Validation.Modules.Memories
+        , WebAssembly.Validation.Modules.Globals
+        , WebAssembly.Validation.Modules.ElementSegments
+        , WebAssembly.Validation.Modules.DataSegments
+        , WebAssembly.Validation.Modules.Imports
+        , WebAssembly.Validation.Modules.Exports
