@@ -2,16 +2,17 @@
 module WebAssembly.Structure.Modules.Imports
 
 import WebAssembly.Structure.Values
+import WebAssembly.Structure.Types
 import WebAssembly.Structure.Modules.Indices
 
 -- Definition
 
 public export
 data ImportDesc : Type where
-  FuncImport   : FuncIdx   -> ImportDesc
-  TableImport  : TableIdx  -> ImportDesc
-  MemImport    : MemIdx    -> ImportDesc
-  GlobalImport : GlobalIdx -> ImportDesc
+  FuncImport   : TypeIdx    -> ImportDesc
+  TableImport  : TableType  -> ImportDesc
+  MemImport    : MemType    -> ImportDesc
+  GlobalImport : GlobalType -> ImportDesc
 
 public export
 record Import where
