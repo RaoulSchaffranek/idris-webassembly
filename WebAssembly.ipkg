@@ -15,6 +15,8 @@ modules = WebAssembly
         , WebAssembly.Structure.Types.MemoryTypes
         , WebAssembly.Structure.Types.TableTypes
         , WebAssembly.Structure.Instructions
+        , WebAssembly.Structure.Instructions.Definition
+        , WebAssembly.Structure.Instructions.DecEq
         , WebAssembly.Structure.Instructions.Control
         , WebAssembly.Structure.Instructions.Memory
         , WebAssembly.Structure.Modules

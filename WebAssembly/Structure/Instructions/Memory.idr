@@ -6,7 +6,7 @@ import Decidable.Equality
 
 -- Definition
 -- Hint: Actual control-instructions are defined in
--- WebAssembly.Structure.Instructions
+-- WebAssembly.Structure.Instructions.Definition
 
 public export
 record MemArg where
